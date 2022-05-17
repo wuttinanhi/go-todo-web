@@ -5,6 +5,7 @@ import (
 	"go-todo-web/database"
 	"go-todo-web/todo"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,11 +61,8 @@ func main() {
 	// gin router
 	router := gin.Default()
 
-	// default route
-	router.GET("/", func(c *gin.Context) {
-		// send hello world json
-		c.JSON(200, gin.H{"message": "Hello World"})
-	})
+	// default route serve static directory
+	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))
 
 	// todo route
 	router.GET("/todo", todo.GetAllTodoRoute)           // get todo route
