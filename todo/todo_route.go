@@ -1,10 +1,26 @@
 package todo
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 )
+
+// todo add dto
+type TodoAddDTO struct {
+	Name       string `json:"name"`
+	CategoryId uint   `json:"category_id"`
+}
+
+// todo update dto
+type TodoUpdteDTO struct {
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	CategoryId uint   `json:"category_id"`
+}
+
+// todo delete dto
+type TodoDeleteDTO struct {
+	Id int `json:"id"`
+}
 
 // serialize todo helper
 func SerializeTodo(todo []Todo) []gin.H {
@@ -37,19 +53,12 @@ func GetAllTodoRoute(c *gin.Context) {
 
 // create todo route
 func CreateTodoRoute(c *gin.Context) {
-	// get todo name
-	name := c.PostForm("name")
-	// get todo category id
-	categoryId, err := strconv.Atoi(c.PostForm("category_id"))
+	// get request body
+	var dto TodoAddDTO
+	c.BindJSON(&dto)
 
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
-
-	// create todo
-	CreateTodo(name, uint(categoryId))
+	// insert todo to database
+	CreateTodo(dto.Name, dto.CategoryId)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})
@@ -57,28 +66,12 @@ func CreateTodoRoute(c *gin.Context) {
 
 // update todo route
 func UpdateTodoRoute(c *gin.Context) {
-	// get todo id
-	id, err := strconv.Atoi(c.PostForm("id"))
-
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
-
-	// get todo name
-	name := c.PostForm("name")
-	// get todo category id
-	categoryId, err := strconv.Atoi(c.PostForm("category_id"))
-
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
+	// get request body
+	var dto TodoUpdteDTO
+	c.BindJSON(&dto)
 
 	// update todo
-	UpdateTodo(id, name, uint(categoryId))
+	UpdateTodo(dto.Id, dto.Name, dto.CategoryId)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})
@@ -86,17 +79,12 @@ func UpdateTodoRoute(c *gin.Context) {
 
 // delete todo route
 func DeleteTodoRoute(c *gin.Context) {
-	// get todo id as int
-	id, err := strconv.Atoi(c.PostForm("id"))
-
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
+	// get request body
+	var dto TodoDeleteDTO
+	c.BindJSON(&dto)
 
 	// delete todo
-	DeleteTodo(id)
+	DeleteTodo(dto.Id)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})
