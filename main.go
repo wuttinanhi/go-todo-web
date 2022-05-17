@@ -5,6 +5,7 @@ import (
 	"go-todo-web/database"
 	"go-todo-web/todo"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -60,6 +61,11 @@ func main() {
 
 	// gin router
 	router := gin.Default()
+
+	//apply CORS
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	router.Use(cors.New(config))
 
 	// default route serve static directory
 	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))
