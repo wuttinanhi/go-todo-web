@@ -65,16 +65,16 @@ func main() {
 	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))
 
 	// todo route
-	router.GET("/todo", todo.GetAllTodoRoute)           // get todo route
-	router.POST("/todo/create", todo.CreateTodoRoute)   // create todo route
-	router.PATCH("/todo/update", todo.UpdateTodoRoute)  // update todo route
-	router.DELETE("/todo/delete", todo.DeleteTodoRoute) // delete todo route
+	router.GET("/api/todo", todo.GetAllTodoRoute)           // get todo route
+	router.POST("/api/todo/create", todo.CreateTodoRoute)   // create todo route
+	router.PATCH("/api/todo/update", todo.UpdateTodoRoute)  // update todo route
+	router.DELETE("/api/todo/delete", todo.DeleteTodoRoute) // delete todo route
 
 	// category route
-	router.GET("/category", category.GetAllCategoryRoute)           // get category route
-	router.POST("/category/create", category.CreateCategoryRoute)   // create category route
-	router.PATCH("/category/update", category.UpdateCategoryRoute)  // update category route
-	router.DELETE("/category/delete", category.DeleteCategoryRoute) // delete category route
+	router.GET("/api/category", category.GetAllCategoryRoute)           // get category route
+	router.POST("/api/category/create", category.CreateCategoryRoute)   // create category route
+	router.PATCH("/api/category/update", category.UpdateCategoryRoute)  // update category route
+	router.DELETE("/api/category/delete", category.DeleteCategoryRoute) // delete category route
 
 	// run router on port 3000
 	router.Run(":3000")
