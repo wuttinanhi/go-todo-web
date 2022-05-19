@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"go-todo-web/category"
 	"go-todo-web/database"
 	"go-todo-web/todo"
+	"io/fs"
 	"net/http"
 	"strings"
 
@@ -12,6 +14,40 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
+
+//go:embed frontend/public
+var embedFS embed.FS
+
+type embedFileSystem struct {
+	http.FileSystem
+	indexes bool
+}
+
+func (e embedFileSystem) Exists(prefix string, path string) bool {
+	f, err := e.Open(path)
+	if err != nil {
+		return false
+	}
+
+	// check if indexing is allowed
+	s, _ := f.Stat()
+	if s.IsDir() && !e.indexes {
+		return false
+	}
+
+	return true
+}
+
+func EmbedFolder(fsEmbed embed.FS, targetPath string, index bool) static.ServeFileSystem {
+	subFS, err := fs.Sub(fsEmbed, targetPath)
+	if err != nil {
+		panic(err)
+	}
+	return embedFileSystem{
+		FileSystem: http.FS(subFS),
+		indexes:    index,
+	}
+}
 
 func MigrateDatabase() {
 	// get database
@@ -90,7 +126,7 @@ func main() {
 	}))
 
 	// default route serve static directory
-	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))
+	router.Use(static.Serve("/", EmbedFolder(embedFS, "frontend/public", true)))
 
 	// todo route
 	router.GET("/api/todo", todo.GetAllTodoRoute)           // get todo route
