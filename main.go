@@ -5,6 +5,8 @@ import (
 	"go-todo-web/database"
 	"go-todo-web/todo"
 
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,23 +62,25 @@ func main() {
 	// gin router
 	router := gin.Default()
 
-	// default route
-	router.GET("/", func(c *gin.Context) {
-		// send hello world json
-		c.JSON(200, gin.H{"message": "Hello World"})
-	})
+	//apply CORS
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	router.Use(cors.New(config))
+
+	// default route serve static directory
+	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))
 
 	// todo route
-	router.GET("/todo", todo.GetAllTodoRoute)           // get todo route
-	router.POST("/todo/create", todo.CreateTodoRoute)   // create todo route
-	router.PATCH("/todo/update", todo.UpdateTodoRoute)  // update todo route
-	router.DELETE("/todo/delete", todo.DeleteTodoRoute) // delete todo route
+	router.GET("/api/todo", todo.GetAllTodoRoute)           // get todo route
+	router.POST("/api/todo/create", todo.CreateTodoRoute)   // create todo route
+	router.PATCH("/api/todo/update", todo.UpdateTodoRoute)  // update todo route
+	router.DELETE("/api/todo/delete", todo.DeleteTodoRoute) // delete todo route
 
 	// category route
-	router.GET("/category", category.GetAllCategoryRoute)           // get category route
-	router.POST("/category/create", category.CreateCategoryRoute)   // create category route
-	router.PATCH("/category/update", category.UpdateCategoryRoute)  // update category route
-	router.DELETE("/category/delete", category.DeleteCategoryRoute) // delete category route
+	router.GET("/api/category", category.GetAllCategoryRoute)           // get category route
+	router.POST("/api/category/create", category.CreateCategoryRoute)   // create category route
+	router.PATCH("/api/category/update", category.UpdateCategoryRoute)  // update category route
+	router.DELETE("/api/category/delete", category.DeleteCategoryRoute) // delete category route
 
 	// run router on port 3000
 	router.Run(":3000")
