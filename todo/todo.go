@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"go-todo-web/category"
 	"go-todo-web/database"
 
 	"gorm.io/gorm"
@@ -20,6 +21,11 @@ type Todo struct {
 	@param name string
 */
 func CreateTodo(name string, categoryId uint) uint {
+	// check if category is valid
+	if category.CheckValidCategoryId(categoryId) == false {
+		panic("category id is not valid")
+	}
+
 	// create new todo
 	todo := Todo{Name: name, CategoryId: categoryId}
 
@@ -36,6 +42,11 @@ func CreateTodo(name string, categoryId uint) uint {
 	@param name string
 */
 func UpdateTodo(id int, name string, categoryId uint) {
+	// check if category is valid
+	if category.CheckValidCategoryId(categoryId) == false {
+		panic("category id is not valid")
+	}
+
 	// update todo
 	db.Model(&Todo{}).Where("id = ?", id).Update("name", name).Update("category_id", categoryId)
 }

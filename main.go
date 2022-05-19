@@ -4,10 +4,13 @@ import (
 	"go-todo-web/category"
 	"go-todo-web/database"
 	"go-todo-web/todo"
+	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func MigrateDatabase() {
@@ -66,6 +69,25 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"}
 	router.Use(cors.New(config))
+
+	// handle panic
+	router.Use(gin.CustomRecoveryWithWriter(nil, func(c *gin.Context, err interface{}) {
+		// if err is ValidationErrors
+		if err, ok := err.(validator.ValidationErrors); ok {
+			// error string
+			var errorString string = err.Error()
+
+			// split error string at \n
+			var errors []string = strings.Split(errorString, "\n")
+
+			// send error json
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors})
+			return
+		}
+
+		// return internal server error
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": "Internal Server Error"})
+	}))
 
 	// default route serve static directory
 	router.Use(static.Serve("/", static.LocalFile("./frontend/public", true)))

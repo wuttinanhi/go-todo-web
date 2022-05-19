@@ -47,3 +47,16 @@ func DeleteCategory(id int) {
 	// delete category
 	db.Delete(&Category{}, id)
 }
+
+/*
+	Check valid category ID
+	@param id int
+*/
+func CheckValidCategoryId(id uint) bool {
+	// get category
+	var category Category
+	db.First(&category, id)
+
+	// check if category is valid
+	return category.ID != 0
+}

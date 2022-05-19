@@ -1,7 +1,7 @@
 package category
 
 import (
-	"strconv"
+	"go-todo-web/helper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,11 +18,12 @@ func GetAllCategoryRoute(c *gin.Context) {
 
 // create category route
 func CreateCategoryRoute(c *gin.Context) {
-	// get category name
-	name := c.PostForm("name")
+	// parse create category dto
+	var dto CategoryAddDTO
+	helper.BindJSON(c, &dto)
 
 	// create category
-	CreateCategory(name)
+	CreateCategory(dto.Name)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})
@@ -30,20 +31,12 @@ func CreateCategoryRoute(c *gin.Context) {
 
 // update category route
 func UpdateCategoryRoute(c *gin.Context) {
-	// get category id
-	id, err := strconv.Atoi(c.PostForm("id"))
-
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
-
-	// get category name
-	name := c.PostForm("name")
+	// parse update category dto
+	var dto CategoryUpdateDTO
+	helper.BindJSON(c, &dto)
 
 	// update category
-	UpdateCategory(id, name)
+	UpdateCategory(dto.Id, dto.Name)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})
@@ -51,17 +44,12 @@ func UpdateCategoryRoute(c *gin.Context) {
 
 // delete category route
 func DeleteCategoryRoute(c *gin.Context) {
-	// get category id
-	id, err := strconv.Atoi(c.PostForm("id"))
-
-	// if error return bad request
-	if err != nil {
-		c.JSON(400, gin.H{"message": "bad request"})
-		return
-	}
+	// parse delete category dto
+	var dto CategoryDeleteDTO
+	helper.BindJSON(c, &dto)
 
 	// delete category
-	DeleteCategory(id)
+	DeleteCategory(dto.Id)
 
 	// send success json
 	c.JSON(200, gin.H{"message": "success"})

@@ -1,26 +1,10 @@
 package todo
 
 import (
+	"go-todo-web/helper"
+
 	"github.com/gin-gonic/gin"
 )
-
-// todo add dto
-type TodoAddDTO struct {
-	Name       string `json:"name"`
-	CategoryId uint   `json:"category_id"`
-}
-
-// todo update dto
-type TodoUpdteDTO struct {
-	Id         int    `json:"id"`
-	Name       string `json:"name"`
-	CategoryId uint   `json:"category_id"`
-}
-
-// todo delete dto
-type TodoDeleteDTO struct {
-	Id int `json:"id"`
-}
 
 // serialize todo helper
 func SerializeTodo(todo []Todo) []gin.H {
@@ -55,7 +39,7 @@ func GetAllTodoRoute(c *gin.Context) {
 func CreateTodoRoute(c *gin.Context) {
 	// get request body
 	var dto TodoAddDTO
-	c.BindJSON(&dto)
+	helper.BindJSON(c, &dto)
 
 	// insert todo to database
 	CreateTodo(dto.Name, dto.CategoryId)
@@ -68,7 +52,7 @@ func CreateTodoRoute(c *gin.Context) {
 func UpdateTodoRoute(c *gin.Context) {
 	// get request body
 	var dto TodoUpdteDTO
-	c.BindJSON(&dto)
+	helper.BindJSON(c, &dto)
 
 	// update todo
 	UpdateTodo(dto.Id, dto.Name, dto.CategoryId)
@@ -81,7 +65,7 @@ func UpdateTodoRoute(c *gin.Context) {
 func DeleteTodoRoute(c *gin.Context) {
 	// get request body
 	var dto TodoDeleteDTO
-	c.BindJSON(&dto)
+	helper.BindJSON(c, &dto)
 
 	// delete todo
 	DeleteTodo(dto.Id)
