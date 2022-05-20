@@ -10,10 +10,6 @@
 
   let deleted = false;
 
-  function onDragStart(event: DragEvent, todoId: number) {
-    event.dataTransfer.setData("todoId", todoId.toString());
-  }
-
   function onDrop(event: DragEvent, categoryId: number) {
     const todoId = parseInt(event.dataTransfer.getData("todoId"));
 
@@ -54,17 +50,24 @@
   async function deleteCategoryWrapper(categoryId: number) {
     CategoryAPI.deleteCategory(categoryId);
     deleted = true;
+    categoryStore.update((update) => {
+      update.splice(
+        update.findIndex((c) => c.ID === categoryId),
+        1
+      );
+      return update;
+    });
   }
 </script>
 
 {#if deleted === false}
   <div
-    class="grid border-2 border-black w-full max-h-[60vh] h-[60vh]"
+    class="flex border-2 shrink-0 border-black rounded-md h-[70vh] max-h-[70vh] w-[25vw] max-w-[25vw]"
     on:dragenter={(event) => event.preventDefault()}
     on:dragover={(event) => event.preventDefault()}
     on:drop={(event) => onDrop(event, category.ID)}
   >
-    <div class="flex flex-col px-4 items-start max-h-full">
+    <div class="flex flex-col px-5 items-start w-full">
       <div class="flex flex-col w-full items-center mb-3">
         <div class="flex flex-row items-baseline w-full">
           <!-- Header -->
@@ -74,6 +77,7 @@
             </h3>
           </div>
 
+          <!-- Delete category button -->
           <div class="justify-self-end shrink-0">
             <button
               class="border-0"
@@ -90,16 +94,11 @@
       </div>
 
       <div
-        class="flex flex-col w-full overflow-y-scroll overflow-x-hidden mb-3 h-full max-h-full"
+        class="flex flex-col w-full overflow-y-scroll overflow-x-hidden mb-3 h-full flex-nowrap"
       >
         {#each $todoStore as todo}
           {#if todo.category_id === category.ID}
-            <div
-              draggable={true}
-              on:dragstart={(event) => onDragStart(event, todo.id)}
-            >
-              <Todo id={todo.id} name={todo.name} categoryId={category.ID} />
-            </div>
+            <Todo {todo} />
           {/if}
         {/each}
       </div>

@@ -1,31 +1,34 @@
-<script>
-  import { TodoAPI } from "./api/todo";
+<script lang="ts">
+  import { TodoAPI, ITodo } from "./api/todo";
 
-  export let id;
-  export let name;
-  export let categoryId;
+  export let todo: ITodo;
 
   let deleted = false;
 
   function deleteHandler() {
-    TodoAPI.deleteTodo(id);
+    TodoAPI.deleteTodo(todo.id);
     deleted = true;
   }
 
   function editHandler() {
-    name = prompt("Please enter todo:", name);
-    TodoAPI.updateTodo(id, name, categoryId);
+    todo.name = prompt("Please enter todo:", todo.name);
+    TodoAPI.updateTodo(todo.id, todo.name, todo.category_id);
+  }
+
+  function onDragStart(event: DragEvent) {
+    event.dataTransfer.setData("todoId", todo.id.toString());
   }
 </script>
 
 {#if deleted === false}
   <div
-    class="h-20 border-2 w-full my-2 flex min-h-min rounded-md hover:bg-gray-100"
-    {id}
+    class="flex h-20 border-2 w-full my-2 min-h-min rounded-md hover:bg-gray-100 bg-white shrink-0"
+    draggable={true}
+    on:dragstart={(event) => onDragStart(event)}
   >
     <div class="flex flex-row items-center px-3 w-full">
       <div class="justify-self-start grow">
-        <p class="text-justify">{name}</p>
+        <p class="text-justify">{todo.name}</p>
       </div>
       <div class="justify-self-end">
         <button class="border-0" on:click={editHandler}>✏️</button>

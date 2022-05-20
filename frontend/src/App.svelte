@@ -36,20 +36,28 @@
 </script>
 
 <main>
-  <h1 class="text-3xl font-bold my-5 text-center text-orange-500">Todo App</h1>
+  <div class="flex flex-col h-full">
+    <div class="flex flex-col justify-center my-5">
+      <div>
+        <h1 class="text-3xl font-bold mb-10 text-center text-orange-500">
+          Todo App
+        </h1>
+      </div>
 
-  <div class="flex justify-center my-5">
-    <button class="flex orange-button" on:click={addCategoryWrapper}>
-      Add Category
-    </button>
-  </div>
+      <div class="flex justify-center">
+        <button class="orange-button" on:click={addCategoryWrapper}>
+          Add Category
+        </button>
+      </div>
+    </div>
 
-  <div
-    class="w-full h-screen grid grid-cols-4 gap-3 content-between justify-around align-middle "
-  >
-    {#each $categoryStore as category}
-      <Board {category} {categoryStore} {todoStore} />
-    {/each}
+    <div
+      class="flex flex-row h-max w-full overflow-x-auto justify-center gap-x-3"
+    >
+      {#each $categoryStore as category}
+        <Board {category} {categoryStore} {todoStore} />
+      {/each}
+    </div>
   </div>
 </main>
 
