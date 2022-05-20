@@ -1,5 +1,5 @@
 <script>
-  import { deleteTodo, updateTodo } from "./api";
+  import { TodoAPI } from "./api/todo";
 
   export let id;
   export let name;
@@ -8,18 +8,21 @@
   let deleted = false;
 
   function deleteHandler() {
-    deleteTodo(id);
+    TodoAPI.deleteTodo(id);
     deleted = true;
   }
 
   function editHandler() {
     name = prompt("Please enter todo:", name);
-    updateTodo(id, name, categoryId);
+    TodoAPI.updateTodo(id, name, categoryId);
   }
 </script>
 
 {#if deleted === false}
-  <div class="h-20 border-2 w-full my-2 flex min-h-min rounded-md" {id}>
+  <div
+    class="h-20 border-2 w-full my-2 flex min-h-min rounded-md hover:bg-gray-100"
+    {id}
+  >
     <div class="flex flex-row items-center px-3 w-full">
       <div class="justify-self-start grow">
         <p class="text-justify">{name}</p>
