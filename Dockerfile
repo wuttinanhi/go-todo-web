@@ -31,4 +31,4 @@ ENV MYSQL_PASSWORD=password
 
 COPY --from=builder /go/bin/app /app
 EXPOSE 3000
-CMD ["./app"]
+CMD ["/app"]
