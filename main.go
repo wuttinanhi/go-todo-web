@@ -4,6 +4,7 @@ import (
 	"embed"
 	"go-todo-web/category"
 	"go-todo-web/database"
+	"go-todo-web/mock"
 	"go-todo-web/todo"
 	"io/fs"
 	"net/http"
@@ -49,54 +50,12 @@ func EmbedFolder(fsEmbed embed.FS, targetPath string, index bool) static.ServeFi
 	}
 }
 
-func MigrateDatabase() {
-	// get database
-	database := database.GetDatabase()
-
-	// migrate database
-	database.AutoMigrate(&todo.Todo{})
-	database.AutoMigrate(&category.Category{})
-}
-
-func CreateMockData() {
-	// get database
-	db := database.GetDatabase()
-
-	// get todo count
-	var count int64
-	db.Find(&todo.Todo{}).Count(&count)
-
-	// get category count
-	var categoryCount int64
-	db.Find(&category.Category{}).Count(&categoryCount)
-
-	// create category id
-	var todoCategoryId, doingCategoryId, doneCategoryId uint
-
-	// create category if not exist
-	if categoryCount == 0 {
-		todoCategoryId = category.CreateCategory("Todo")
-		doingCategoryId = category.CreateCategory("Doing")
-		doneCategoryId = category.CreateCategory("Done")
-	}
-
-	// if todo count is 0
-	if count == 0 {
-		// create todo
-		todo.CreateTodo("Mock todo A", todoCategoryId)
-		todo.CreateTodo("Mock todo B", todoCategoryId)
-		todo.CreateTodo("Mock todo C", doingCategoryId)
-		todo.CreateTodo("Mock todo D", doingCategoryId)
-		todo.CreateTodo("Mock todo E", doneCategoryId)
-	}
-}
-
 func main() {
 	// migrate database
-	MigrateDatabase()
+	database.GetDatabase().AutoMigrate(&todo.Todo{}, &category.Category{})
 
 	// create mock if not exist
-	CreateMockData()
+	mock.CreateMockData()
 
 	// gin router
 	router := gin.Default()
